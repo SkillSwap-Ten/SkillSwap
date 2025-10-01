@@ -20,10 +20,6 @@ namespace SkillSwap.Migrations
             migrationBuilder.DropTable(
                 name: "Primary_abilities");
 
-            migrationBuilder.RenameTable(
-                name: "state_requests",
-                newName: "State_requests");
-
             migrationBuilder.CreateTable(
                 name: "Abilities",
                 columns: table => new
@@ -89,10 +85,6 @@ namespace SkillSwap.Migrations
 
             migrationBuilder.DropTable(
                 name: "Abilities");
-
-            migrationBuilder.RenameTable(
-                name: "State_requests",
-                newName: "state_requests");
 
             migrationBuilder.CreateTable(
                 name: "Primary_abilities",
