@@ -39,7 +39,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("http://localhost:3000","http://localhost:3001","https://skillswapriwi.azurewebsites.net",
-                                "https://skill-swap-app-pink.vercel.app","https://skill-swap-ten.vercel.app")
+                                "https://skillswap-qww9.onrender.com","https://skillswapten.vercel.app")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
                 
