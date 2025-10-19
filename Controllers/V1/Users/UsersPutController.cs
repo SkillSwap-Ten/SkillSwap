@@ -62,6 +62,12 @@ public class UsersPutController : ControllerBase
         // Map the updated data from the DTO to the found user entity.
         _mapper.Map(userDTO, userFinded);
 
+        // Hash del password (solo si el usuario cambió su contraseña)
+        if (!string.IsNullOrEmpty(userDTO.Password)) 
+        {
+            userFinded.Password = _passwordHasher.HashPassword(userFinded, userDTO.Password);
+        }
+
         // Save the changes to the database.
         await _dbContext.SaveChangesAsync();
 
