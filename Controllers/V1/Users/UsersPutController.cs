@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkillSwap.Dtos.User;
@@ -62,10 +63,11 @@ public class UsersPutController : ControllerBase
         // Map the updated data from the DTO to the found user entity.
         _mapper.Map(userDTO, userFinded);
 
-        // Hash del password (solo si el usuario cambió su contraseña)
-        if (!string.IsNullOrEmpty(userDTO.Password)) 
+        // FIX: Password hash (only if the user changed their password)
+        if (!string.IsNullOrEmpty(userDTO.Password))
         {
-            userFinded.Password = _passwordHasher.HashPassword(userFinded, userDTO.Password);
+            var passwordHasher = new PasswordHasher<User>();
+            userFinded.Password = passwordHasher.HashPassword(userFinded, userDTO.Password);
         }
 
         // Save the changes to the database.
@@ -159,7 +161,6 @@ public class UsersPutController : ControllerBase
         }
 
         // Update user state based on the action input ("habilitar" or "deshabilitar")
-
         if (action.Equals("habilitar", StringComparison.OrdinalIgnoreCase))
         {
 
