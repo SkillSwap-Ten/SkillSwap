@@ -1,25 +1,29 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 5140
-
-ENV ASPNETCORE_URLS=http://+:5140
-
-USER app
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG configuration=Release
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+
+# Copiar archivo de proyecto y restaurar dependencias
 COPY ["SkillSwap.csproj", "./"]
 RUN dotnet restore "SkillSwap.csproj"
+
+# Copiar todo el código y compilar
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "SkillSwap.csproj" -c $configuration -o /app/build
+RUN dotnet build "SkillSwap.csproj" -c Release -o /app/build
 
+# Stage 2: Publish
 FROM build AS publish
-ARG configuration=Release
-RUN dotnet publish "SkillSwap.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "SkillSwap.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM base AS final
+# Stage 3: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+
+# Exponer puerto (Render usa variable PORT)
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+
+# Copiar archivos publicados
 COPY --from=publish /app/publish .
-COPY .env .
+
+# Entrypoint
 ENTRYPOINT ["dotnet", "SkillSwap.dll"]

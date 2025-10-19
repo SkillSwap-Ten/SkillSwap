@@ -14,6 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 Env.Load();
 
+// Configurar puerto dinámico para Render/Railway/Producción
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(int.Parse(port));
+});
+
 builder.Services.AddSignalR();
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllers();
