@@ -1,91 +1,121 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SkillSwap.Dtos.User;
 using SkillSwap.Models;
 using SkillSwap.Validations;
-namespace SkillSwap.Controllers.V1;
 
-[ApiController]
-[Route("api/[controller]")]
-public class UsersPostController : ControllerBase
+namespace SkillSwap.Controllers.V1
 {
-    private readonly AppDbContext _dbContext;
-    private readonly IMapper _mapper;
-
-    //Constructor
-    public UsersPostController(AppDbContext dbContext, IMapper mapper)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsersPostController : ControllerBase
     {
-        _dbContext = dbContext;
-        _mapper = mapper;
-    }
+        private readonly AppDbContext _dbContext;
+        private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-    /// <summary>
-    /// Create a new user
-    /// </summary>
-    /// <remarks>
-    /// Endpoint to register a new user with their personal details, abilities, and qualifications.
-    /// This method also hashes the user's password before saving it to the database.
-    /// </remarks>
-    /// <param name="userDTO">The data transfer object (DTO) containing the user's details</param>
-    /// <returns>
-    /// Returns an HTTP status code:
-    /// - 200 OK: If the user is successfully created and stored in the database.
-    /// - 400 Bad Request: If the validation of the user data fails.
-    /// The response includes a success message if the registration is successful or an error message if validation fails.
-    /// </returns>
-    [HttpPost("PostUserCreate")]
-    public async Task<IActionResult> PostUserCreate([FromBody] UserPostDTO userDTO)
-    {
-
-        var response = await UserValidation.GeneralValidationAsync(_dbContext, userDTO);
-
-        if (response != "correcto")
+        // Constructor
+        public UsersPostController(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
         {
-            return StatusCode(400, ManageResponse.ErrorBadRequest(response));
+            _dbContext = dbContext;
+            _mapper = mapper;
+            _configuration = configuration;
         }
-        // Create the qualification before create user with DTO properties.
-        var qualification = new Qualification
+
+        /// <summary>
+        /// Create a new user
+        /// </summary>
+        /// <remarks>
+        /// Endpoint to register a new user with their personal details, abilities, and qualifications.
+        /// This method also hashes the user's password before saving it to the database.
+        /// If registration is successful, a JWT token is generated and returned with user info.
+        /// </remarks>
+        [HttpPost("PostUserCreate")]
+        public async Task<IActionResult> PostUserCreate([FromBody] UserPostDTO userDTO)
         {
-            Count = 0,
-            AccumulatorAdition = 0
-        };
+            // Run general validation for the user data
+            var response = await UserValidation.GeneralValidationAsync(_dbContext, userDTO);
+            if (response != "correcto")
+            {
+                return StatusCode(400, ManageResponse.ErrorBadRequest(response));
+            }
 
-        await _dbContext.Qualifications.AddAsync(qualification);
-        await _dbContext.SaveChangesAsync();
+            // Create the qualification entity first
+            var qualification = new Qualification
+            {
+                Count = 0,
+                AccumulatorAdition = 0
+            };
+            await _dbContext.Qualifications.AddAsync(qualification);
+            await _dbContext.SaveChangesAsync();
 
-        // Create the ability before create user with DTO propierties
-        var abilities = new Ability
+            // Create the ability entity
+            var abilities = new Ability
+            {
+                Category = userDTO.Category,
+                Abilities = userDTO.Abilities
+            };
+            await _dbContext.Abilities.AddAsync(abilities);
+            await _dbContext.SaveChangesAsync();
+
+            // Map the userDTO to the User model
+            var user = _mapper.Map<User>(userDTO);
+            user.CreatedAt = DateOnly.FromDateTime(DateTime.Now);
+            user.IdState = 1; // Active by default
+            user.IdRol = 2;   // Default role: User
+            user.IdQualification = qualification.Id;
+            user.IdAbility = abilities.Id;
+
+            // Hash password
+            var passwordHasher = new PasswordHasher<User>();
+            user.Password = passwordHasher.HashPassword(user, userDTO.Password);
+
+            // Save user
+            await _dbContext.Users.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
+
+            // Generate JWT Token only after successful save
+            var token = GenerateJwtToken(user);
+
+            // Prepare response
+            var successResponse = new
+            {
+                id = user.Id,
+                role = user.IdRol,
+                email = user.Email,
+                token
+            };
+
+            return StatusCode(200, ManageResponse.SuccessfullWithObject("Usuario registrado correctamente!", successResponse));
+        }
+
+        // Private method to generate JWT Token
+        private string GenerateJwtToken(User user)
         {
-            Category = userDTO.Category,
-            Abilities = userDTO.Abilities
-        };
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_KEY"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        await _dbContext.Abilities.AddAsync(abilities);
-        await _dbContext.SaveChangesAsync();
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim("role", user.IdRol.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JWT_ISSUER"],
+                audience: _configuration["JWT_AUDIENCE"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(double.Parse(_configuration["JWT_EXPIREMINUTES"])),
+                signingCredentials: credentials
+            );
 
-        // Map the userDTO to the User model
-        var user = _mapper.Map<User>(userDTO);
-
-        // Set additional properties not included in the DTO
-        user.CreatedAt = DateOnly.FromDateTime(DateTime.Now);
-        user.IdState = 1;
-        user.IdRol = 2;
-        user.IdQualification = qualification.Id;
-        user.IdAbility = abilities.Id;
-
-        // Create PasswordHasher<User> instance
-        var passwordHasher = new PasswordHasher<User>();
-
-        // Hash the password and assign it to the user's Password property
-        user.Password = passwordHasher.HashPassword(user, userDTO.Password);
-
-
-        // Save in database
-        await _dbContext.Users.AddAsync(user);
-        await _dbContext.SaveChangesAsync();
-
-        return StatusCode(200, ManageResponse.Successfull("Usuario registrado correctamente!"));
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
 }
