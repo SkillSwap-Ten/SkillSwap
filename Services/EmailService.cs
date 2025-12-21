@@ -15,7 +15,7 @@ namespace SkillSwap.Services
         }
 
         // Correo para restaurar contraseña
-        public async Task SendPasswordResetEmail(string toEmail, string resetLink)
+        public async Task SendPasswordResetEmail(string toEmail, string resetToken)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress("SkillSwap", "no-reply@miapp.com"));
@@ -79,7 +79,7 @@ namespace SkillSwap.Services
                             <table style=""width:100%;"">
                                 <tr>
                                     <td align=""center"">
-                                        <a href=""https://skillswapten.vercel.app/auth/password/reset/{resetLink}""
+                                        <a href=""https://skill-swap-ten.vercel.app/auth/password/reset?token={resetToken}""
                                            style=""display:inline-block;padding:16px 48px;font-size:16px;font-weight:600;color:#fff;
                                            background:linear-gradient(90deg,#F0AC27 0%,#da731e 60%,#ea2424 100%);
                                            text-decoration:none;border-radius:50px;box-shadow:0 4px 16px rgba(234,36,36,0.25);"">
@@ -201,7 +201,7 @@ namespace SkillSwap.Services
                             <table role=""presentation"" style=""width:100%;margin-top:24px;"">
                                 <tr>
                                     <td align=""center"">
-                                        <a href=""https://skillswapten.vercel.app""
+                                        <a href=""https://skill-swap-ten.vercel.app""
                                             style=""display:inline-block;padding:16px 48px;font-size:16px;font-weight:600;color:#fff;
                                             background:linear-gradient(90deg,#F0AC27 0%,#da731e 60%,#ea2424 100%);
                                             text-decoration:none;border-radius:50px;box-shadow:0 4px 16px rgba(234,36,36,0.25);"">

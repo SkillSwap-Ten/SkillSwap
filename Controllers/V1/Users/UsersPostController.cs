@@ -8,8 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using SkillSwap.Dtos.User;
 using SkillSwap.Models;
 using SkillSwap.Validations;
+using SkillSwap.Interfaces;
 
-namespace SkillSwap.Controllers.V1
+namespace SkillSwap.Controllers.V1.Users
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -18,6 +19,7 @@ namespace SkillSwap.Controllers.V1
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
         // Constructor
         public UsersPostController(AppDbContext dbContext, IMapper mapper, IConfiguration configuration, IEmailService emailService)
@@ -37,72 +39,72 @@ namespace SkillSwap.Controllers.V1
         /// If registration is successful, a JWT token is generated and returned with user info.
         /// </remarks>
         [HttpPost("PostUserCreate")]
-public async Task<IActionResult> PostUserCreate([FromBody] UserPostDTO userDTO)
-{
-    var response = await UserValidation.GeneralValidationAsync(_dbContext, userDTO);
-    if (response != "correcto")
-    {
-        return StatusCode(400, ManageResponse.ErrorBadRequest(response));
-    }
+        public async Task<IActionResult> PostUserCreate([FromBody] UserPostDTO userDTO)
+        {
+            var response = await UserValidation.GeneralValidationAsync(_dbContext, userDTO);
+            if (response != "correcto")
+            {
+                return StatusCode(400, ManageResponse.ErrorBadRequest(response));
+            }
 
-    // Create qualification
-    var qualification = new Qualification
-    {
-        Count = 0,
-        AccumulatorAdition = 0
-    };
-    await _dbContext.Qualifications.AddAsync(qualification);
-    await _dbContext.SaveChangesAsync();
+            // Create qualification
+            var qualification = new Qualification
+            {
+                Count = 0,
+                AccumulatorAdition = 0
+            };
+            await _dbContext.Qualifications.AddAsync(qualification);
+            await _dbContext.SaveChangesAsync();
 
-    // Create abilities
-    var abilities = new Ability
-    {
-        Category = userDTO.Category,
-        Abilities = userDTO.Abilities
-    };
-    await _dbContext.Abilities.AddAsync(abilities);
-    await _dbContext.SaveChangesAsync();
+            // Create abilities
+            var abilities = new Ability
+            {
+                Category = userDTO.Category,
+                Abilities = userDTO.Abilities
+            };
+            await _dbContext.Abilities.AddAsync(abilities);
+            await _dbContext.SaveChangesAsync();
 
-    // Map user
-    var user = _mapper.Map<User>(userDTO);
-    user.CreatedAt = DateOnly.FromDateTime(DateTime.Now);
-    user.IdState = 1; // Active by default
-    user.IdRol = 2;   // Default role: User
-    user.IdQualification = qualification.Id;
-    user.IdAbility = abilities.Id;
+            // Map user
+            var user = _mapper.Map<User>(userDTO);
+            user.CreatedAt = DateOnly.FromDateTime(DateTime.Now);
+            user.IdState = 1; // Active by default
+            user.IdRol = 2;   // Default role: User
+            user.IdQualification = qualification.Id;
+            user.IdAbility = abilities.Id;
 
-    // Hash password
-    var passwordHasher = new PasswordHasher<User>();
-    user.Password = passwordHasher.HashPassword(user, userDTO.Password);
+            // Hash password
+            var passwordHasher = new PasswordHasher<User>();
+            user.Password = passwordHasher.HashPassword(user, userDTO.Password);
 
-    // Save user
-    await _dbContext.Users.AddAsync(user);
-    await _dbContext.SaveChangesAsync();
+            // Save user
+            await _dbContext.Users.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
 
-    // --> SEND WELCOME EMAIL
-    try
-    {
-        await _emailService.SendWelcomeEmail(user.Email, user.FirstName);
-    }
-    catch (Exception ex)
-    {
-        // Optionally log error without stopping registration
-        Console.WriteLine($"[EmailService] Error sending welcome email: {ex.Message}");
-    }
+            // --> SEND WELCOME EMAIL
+            try
+            {
+                await _emailService.SendWelcomeEmail(user.Email, user.Name);
+            }
+            catch (Exception ex)
+            {
+                // Optionally log error without stopping registration
+                Console.WriteLine($"[EmailService] Error sending welcome email: {ex.Message}");
+            }
 
-    // Generate JWT Token
-    var token = GenerateJwtToken(user);
+            // Generate JWT Token
+            var token = GenerateJwtToken(user);
 
-    var successResponse = new
-    {
-        id = user.Id,
-        role = user.IdRol,
-        email = user.Email,
-        token
-    };
+            var successResponse = new
+            {
+                id = user.Id,
+                role = user.IdRol,
+                email = user.Email,
+                token
+            };
 
-    return StatusCode(200, ManageResponse.SuccessfullWithObject("Usuario registrado correctamente!", successResponse));
-}
+            return StatusCode(200, ManageResponse.SuccessfullWithObject("Usuario registrado correctamente!", successResponse));
+        }
 
         // Private method to generate JWT Token
         private string GenerateJwtToken(User user)

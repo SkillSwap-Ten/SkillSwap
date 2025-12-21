@@ -205,7 +205,7 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("phone_number");
             entity.Property(e => e.PasswordResetToken)
-                .HasMaxLength(255)
+                .HasMaxLength(512)
                 .HasColumnName("password_reset_token");
             entity.Property(e => e.PasswordResetTokenExpiry)
                 .HasMaxLength(65)
