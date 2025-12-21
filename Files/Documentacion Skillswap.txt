@@ -7,7 +7,7 @@ Documentación general del proyecto
 	
 App desplegada en:
 
-	https://skill-swap-app-pink.vercel.app/
+	https://skill-swap-ten.vercel.app/
 
 Diseño UI & UX (Figma):
 
@@ -15,11 +15,11 @@ Diseño UI & UX (Figma):
 
 Repositorio Frontend: 
 
-	https://github.com/luisaramicar11/skillSwap
+	https://github.com/SkillSwap-Ten/Skiller
 
 Repositorio Backend: 
 	
-	https://github.com/medi77na/SkillSwap
+	https://github.com/SkillSwap-Ten/SkillSwap
 
 Notas:
 
@@ -40,5 +40,5 @@ JWT_EXPIREMINUTES=60
 
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=skillswap4@gmail.com
+SMTP_USER=skillswapten@gmail.com
 SMTP_PASS=akyihdrhsomjuhah

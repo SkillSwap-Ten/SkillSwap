@@ -18,7 +18,7 @@ RUN dotnet publish "SkillSwap.csproj" -c Release -o /app/publish /p:UseAppHost=f
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Exponer puerto (Render usa variable PORT)
+# Exponer el puerto (Render usa variable PORT)
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 

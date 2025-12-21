@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: .
+    container_name: backend-skillswap
+    ports:
+      - "5140:5140"
+    environment:
+      ASPNETCORE_URLS: http://+:5140
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - skillswap-network
+
+  frontend:
+    build: ../Skiller
+    container_name: frontend-skillswap
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_BASE_API_URL: ${NEXT_PUBLIC_BASE_API_URL}
+      NEXT_PUBLIC_GITHUB_API_URL: ${NEXT_PUBLIC_GITHUB_API_URL}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+    networks:
+      - skillswap-network
+
+networks:
+  skillswap-network:
+    driver: bridge
