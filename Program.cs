@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 Env.Load();
 
-// Configurar puerto dinámico para Render/Railway/Producción
+// Set dynamic port for Render/Railway/Production
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -38,11 +38,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000","http://localhost:3001","https://skillswapriwi.azurewebsites.net",
-                                "https://skillswap-qww9.onrender.com","https://skillswapten.vercel.app")
+            policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "https://skillswapriwi.azurewebsites.net",
+                                "https://skillswap-qww9.onrender.com", "https://skillswapten.vercel.app", "https://skill-swap-ten.vercel.app")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
-                
+
         });
 });
 
@@ -107,7 +107,6 @@ builder.Services.AddAuthentication(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
