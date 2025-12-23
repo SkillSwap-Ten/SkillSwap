@@ -26,7 +26,7 @@ public class UsersPutController : ControllerBase
     /// Update a user by their own action
     /// </summary>
     /// <remarks>
-    /// This endpoint allows a user to update their own information based on the provided `UserPostDTO` object.
+    /// This endpoint allows a user to update their own information based on the provided `UserPutDTO` object.
     /// </remarks>
     /// <param name="id">The ID of the user to be updated</param>
     /// <param name="userDTO">The updated user data sent in the request body</param>
@@ -36,7 +36,7 @@ public class UsersPutController : ControllerBase
     /// - 400 Bad Request: If the user is not found or if the validation fails.
     /// </returns>
     [HttpPut("PutUserByUser")]
-    public async Task<IActionResult> PutByUser(int id, UserPostDTO userDTO)
+    public async Task<IActionResult> PutByUser(int id, UserPutDTO userDTO)
     {
 
         // Attempt to find the user in the database by ID.
@@ -57,18 +57,11 @@ public class UsersPutController : ControllerBase
             return StatusCode(400, ManageResponse.ErrorBadRequest(validation));
         }
 
-        userFinded.Ability.Category = userDTO.Category;
-        userFinded.Ability.Abilities = userDTO.Abilities;
-
         // Map the updated data from the DTO to the found user entity.
         _mapper.Map(userDTO, userFinded);
-
-        // FIX: Password hash (only if the user changed their password)
-        if (!string.IsNullOrEmpty(userDTO.Password))
-        {
-            var passwordHasher = new PasswordHasher<User>();
-            userFinded.Password = passwordHasher.HashPassword(userFinded, userDTO.Password);
-        }
+        
+        userFinded.Ability.Category = userDTO.Category;
+        userFinded.Ability.Abilities = userDTO.Abilities;
 
         // Save the changes to the database.
         await _dbContext.SaveChangesAsync();
@@ -146,6 +139,12 @@ public class UsersPutController : ControllerBase
             .Include(r => r.IdStateNavigation)
             .FirstOrDefaultAsync(i => i.Id == id);
 
+        // If the user does not exist, return a 404 status with an error message
+        if (userFind == null)
+        {
+            return StatusCode(404, ManageResponse.ErrorNotFound());
+        }
+
         // Prepare response object with current user information
         var response = new
         {
@@ -153,12 +152,6 @@ public class UsersPutController : ControllerBase
             nombre = userFind.Name,
             estado = userFind.IdStateNavigation.Name
         };
-
-        // If the user does not exist, return a 404 status with an error message
-        if (userFind == null)
-        {
-            return StatusCode(404, ManageResponse.ErrorNotFound());
-        }
 
         // Update user state based on the action input ("habilitar" or "deshabilitar")
         if (action.Equals("habilitar", StringComparison.OrdinalIgnoreCase))
