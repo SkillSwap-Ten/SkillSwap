@@ -9,53 +9,48 @@ using SkillSwap.Services;
 
 namespace SkillSwap.Validations
 {
-    public class UserPutValidation{
-    public static async Task<string> GeneralValidationAsync(AppDbContext _dbContext, [FromBody] UserPostDTO userDTO)
+    public class UserPutValidation
     {
-
-        // Check if email is valid
-        if (!DataValidator.ValidateEmail(userDTO.Email))
+        public static async Task<string> GeneralValidationAsync(AppDbContext _dbContext, [FromBody] UserPutDTO userDTO)
         {
-            return "Correo inválido";
-        }
 
-        //Check if password is valid
-        if (!DataValidator.ValidatePassword(userDTO.Password))
-        {
-            return "Contraseña inválida";
-        }
+            // Check if email is valid
+            if (!DataValidator.ValidateEmail(userDTO.Email))
+            {
+                return "Correo inválido";
+            }
 
-        //Check if name is valid
-        if (!DataValidator.ValidateLettersOnly(userDTO.Name))
-        {
-            return "Nombre inválido";
-        }
+            //Check if name is valid
+            if (!DataValidator.ValidateLettersOnly(userDTO.Name))
+            {
+                return "Nombre inválido";
+            }
 
-        //Check if lastName is valid
-        if (!DataValidator.ValidateLettersOnly(userDTO.LastName))
-        {
-            return "Apellido inválido";
-        }
+            //Check if lastName is valid
+            if (!DataValidator.ValidateLettersOnly(userDTO.LastName))
+            {
+                return "Apellido inválido";
+            }
 
-        //Check if birthday is not null
-        if (!DataValidator.ValidateContainNotNull(userDTO.Birthdate))
-        {
-            return "Fecha de nacimiento es requerida";
-        }
+            //Check if birthday is not null
+            if (!DataValidator.ValidateContainNotNull(userDTO.Birthdate))
+            {
+                return "Fecha de nacimiento es requerida";
+            }
 
-        //Check if category is not null
-        if (!DataValidator.ValidateContainNotNull(userDTO.Category))
-        {
-            return "Las categorias son requeridas";
-        }
+            //Check if category is not null
+            if (!DataValidator.ValidateContainNotNull(userDTO.Category))
+            {
+                return "Las categorias son requeridas";
+            }
 
-        //Check if skills is not null
-        if (!DataValidator.ValidateContainNotNull(userDTO.Abilities))
-        {
-            return "Las habilidades son requeridas";
-        }
+            //Check if skills is not null
+            if (!DataValidator.ValidateContainNotNull(userDTO.Abilities))
+            {
+                return "Las habilidades son requeridas";
+            }
 
-        return "correcto";
+            return "correcto";
+        }
     }
-}
 }
