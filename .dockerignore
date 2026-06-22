@@ -1,0 +1,57 @@
+# ─────────────────────────────────────────────────────
+# .dockerignore — excludes from build context
+# Goal: send the smallest possible context to the daemon
+# ─────────────────────────────────────────────────────
+
+# Build outputs (always)
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Tests are not built into the API image; they run in CI
+tests/
+
+# Docs / handoffs not needed in runtime image
+docs/
+*.md
+LICENSE
+
+# BMAD methodology (local tooling only)
+_bmad/
+_bmad-output/
+.agent/
+.agents/
+.claude/
+.bmad-core/
+.github/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+
+# Local secrets (must never end up in image)
+.env
+.env.*
+!.env.example
+src/**/appsettings.Development.json
+
+# Docker artifacts themselves (don't recurse into context)
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE backups
+*.swp
+*.swo

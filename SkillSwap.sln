@@ -1,0 +1,85 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{899932E9-840A-4B62-9DE2-B6C206E9000F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.Domain", "src\SkillSwap.Domain\SkillSwap.Domain.csproj", "{689A4162-C854-4494-8FDD-07F2BEBC9F73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.Application", "src\SkillSwap.Application\SkillSwap.Application.csproj", "{DBC36DFF-8BF7-4377-98EC-5E549E4FA053}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.Infrastructure", "src\SkillSwap.Infrastructure\SkillSwap.Infrastructure.csproj", "{62E7B979-8960-49E5-B382-A10319475084}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.API", "src\SkillSwap.API\SkillSwap.API.csproj", "{631ECE31-A0D7-4F4A-B161-3635E5EC6491}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.Shared", "src\SkillSwap.Shared\SkillSwap.Shared.csproj", "{AEE672D8-D38E-49CC-A673-75CBC217DFCB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{FECCC36D-0263-461D-AA07-767AFE1C94F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.Domain.UnitTests", "tests\SkillSwap.Domain.UnitTests\SkillSwap.Domain.UnitTests.csproj", "{94FA29E0-5D25-4897-8C77-E0358CE04F9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.Application.UnitTests", "tests\SkillSwap.Application.UnitTests\SkillSwap.Application.UnitTests.csproj", "{A7A3ACA6-34A5-48B2-B91E-30E2FAA1A374}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.Infrastructure.IntegrationTests", "tests\SkillSwap.Infrastructure.IntegrationTests\SkillSwap.Infrastructure.IntegrationTests.csproj", "{1AC392DC-D0A7-45C3-95E0-2D3CF8D2C7A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillSwap.API.FunctionalTests", "tests\SkillSwap.API.FunctionalTests\SkillSwap.API.FunctionalTests.csproj", "{A5066756-1FD2-4A92-8922-92D1E5247BBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{689A4162-C854-4494-8FDD-07F2BEBC9F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{689A4162-C854-4494-8FDD-07F2BEBC9F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{689A4162-C854-4494-8FDD-07F2BEBC9F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{689A4162-C854-4494-8FDD-07F2BEBC9F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBC36DFF-8BF7-4377-98EC-5E549E4FA053}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBC36DFF-8BF7-4377-98EC-5E549E4FA053}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBC36DFF-8BF7-4377-98EC-5E549E4FA053}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBC36DFF-8BF7-4377-98EC-5E549E4FA053}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62E7B979-8960-49E5-B382-A10319475084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62E7B979-8960-49E5-B382-A10319475084}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62E7B979-8960-49E5-B382-A10319475084}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62E7B979-8960-49E5-B382-A10319475084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{631ECE31-A0D7-4F4A-B161-3635E5EC6491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{631ECE31-A0D7-4F4A-B161-3635E5EC6491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{631ECE31-A0D7-4F4A-B161-3635E5EC6491}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{631ECE31-A0D7-4F4A-B161-3635E5EC6491}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEE672D8-D38E-49CC-A673-75CBC217DFCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE672D8-D38E-49CC-A673-75CBC217DFCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE672D8-D38E-49CC-A673-75CBC217DFCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE672D8-D38E-49CC-A673-75CBC217DFCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94FA29E0-5D25-4897-8C77-E0358CE04F9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94FA29E0-5D25-4897-8C77-E0358CE04F9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94FA29E0-5D25-4897-8C77-E0358CE04F9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94FA29E0-5D25-4897-8C77-E0358CE04F9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7A3ACA6-34A5-48B2-B91E-30E2FAA1A374}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7A3ACA6-34A5-48B2-B91E-30E2FAA1A374}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7A3ACA6-34A5-48B2-B91E-30E2FAA1A374}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7A3ACA6-34A5-48B2-B91E-30E2FAA1A374}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AC392DC-D0A7-45C3-95E0-2D3CF8D2C7A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AC392DC-D0A7-45C3-95E0-2D3CF8D2C7A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AC392DC-D0A7-45C3-95E0-2D3CF8D2C7A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AC392DC-D0A7-45C3-95E0-2D3CF8D2C7A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5066756-1FD2-4A92-8922-92D1E5247BBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5066756-1FD2-4A92-8922-92D1E5247BBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5066756-1FD2-4A92-8922-92D1E5247BBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5066756-1FD2-4A92-8922-92D1E5247BBA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{689A4162-C854-4494-8FDD-07F2BEBC9F73} = {899932E9-840A-4B62-9DE2-B6C206E9000F}
+		{DBC36DFF-8BF7-4377-98EC-5E549E4FA053} = {899932E9-840A-4B62-9DE2-B6C206E9000F}
+		{62E7B979-8960-49E5-B382-A10319475084} = {899932E9-840A-4B62-9DE2-B6C206E9000F}
+		{631ECE31-A0D7-4F4A-B161-3635E5EC6491} = {899932E9-840A-4B62-9DE2-B6C206E9000F}
+		{AEE672D8-D38E-49CC-A673-75CBC217DFCB} = {899932E9-840A-4B62-9DE2-B6C206E9000F}
+		{94FA29E0-5D25-4897-8C77-E0358CE04F9E} = {FECCC36D-0263-461D-AA07-767AFE1C94F7}
+		{A7A3ACA6-34A5-48B2-B91E-30E2FAA1A374} = {FECCC36D-0263-461D-AA07-767AFE1C94F7}
+		{1AC392DC-D0A7-45C3-95E0-2D3CF8D2C7A3} = {FECCC36D-0263-461D-AA07-767AFE1C94F7}
+		{A5066756-1FD2-4A92-8922-92D1E5247BBA} = {FECCC36D-0263-461D-AA07-767AFE1C94F7}
+	EndGlobalSection
+EndGlobal
