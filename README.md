@@ -1,6 +1,9 @@
 # SkillSwap
 
-![Status](https://img.shields.io/badge/status-v2.0%20%E2%80%94%20In%20Development-orange) ![.NET](https://img.shields.io/badge/.NET-8.0%20LTS-512BD4) ![License](https://img.shields.io/badge/license-MIT-green)
+[![CI](https://github.com/SkillSwap-Ten/SkillSwap/actions/workflows/ci.yml/badge.svg?branch=v2)](https://github.com/SkillSwap-Ten/SkillSwap/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET 8 LTS](https://img.shields.io/badge/.NET-8.0%20LTS-blue.svg)](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+[![Status](https://img.shields.io/badge/v2.0-in--development-orange.svg)](docs/adr/ADR-001-clean-architecture-migration.md)
 
 > A skill-exchange platform where members trade what they know for what they want to learn.
 
@@ -15,7 +18,7 @@ SkillSwap is being rewritten from scratch (**v2.0**) on Clean Architecture using
 | Architecture          | Clean Architecture — see [ADR-001](docs/adr/ADR-001-clean-architecture-migration.md) |
 | Runtime               | .NET 8 LTS (support until November 2026)                            |
 | Frontend (`Skiller`)  | Still on v1 contract; migration scheduled post-cutover              |
-| CI/CD                 | Pending — see HANDOFF-03                                            |
+| CI/CD                 | GitHub Actions — build, format, test + coverage (see [§ CI/CD](#cicd)) |
 | First feature slice   | Pending — `Users.Register` will be the foundation                   |
 
 ---
@@ -88,6 +91,14 @@ Coverage targets enforced in CI ([ADR-001 §7](docs/adr/ADR-001-clean-architectu
 | Infrastructure   | ≥ 70%            |
 | API              | ≥ 60%            |
 | Overall          | ≥ 80%            |
+
+---
+
+## CI/CD
+
+Every push and pull request to `v2` or `main` triggers the [CI workflow](.github/workflows/ci.yml): `dotnet format` check → restore → build (Release, warnings-as-errors) → test with coverage → coverage report uploaded as artifact. Coverage thresholds from [ADR-001 §7](docs/adr/ADR-001-clean-architecture-migration.md) (Domain ≥ 90, Application ≥ 85, Infrastructure ≥ 70, API ≥ 60, Overall ≥ 80) currently run as **informational** — they will flip to hard-fail starting with the first vertical slice (HANDOFF-04), once real tests exist to back them.
+
+The [CD workflow](.github/workflows/cd.yml) is **parked**: manual-only (`workflow_dispatch`) and gated behind a `DEPLOY` confirmation string and the `RENDER_DEPLOY_HOOK_URL` secret. It activates once the first endpoints land in `SkillSwap.API` (post HANDOFF-04).
 
 ---
 

@@ -1,0 +1,51 @@
+name: CD (staging)
+
+# IMPORTANTE: este workflow está intencionalmente PARQUEADO.
+# No corre en push automático hasta que:
+#   1. Existan endpoints reales en SkillSwap.API
+#   2. El secret RENDER_DEPLOY_HOOK_URL esté configurado en GitHub
+# Por ahora solo se puede disparar manualmente (workflow_dispatch).
+# Activación esperada: post HANDOFF-04 (primer vertical slice).
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY to confirm'
+        required: true
+        type: string
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  guard:
+    name: Confirmation guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify confirmation input
+        if: github.event.inputs.confirm != 'DEPLOY'
+        run: |
+          echo "::error::Confirmation string did not match. Aborting."
+          exit 1
+
+  deploy:
+    name: Deploy to Render (staging)
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: staging
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::RENDER_DEPLOY_HOOK_URL secret not configured."
+            echo "::error::Configure it in GitHub Settings > Environments > staging > Secrets."
+            exit 1
+          fi
+          curl -fsSL -X POST "$HOOK"
+          echo "Deploy triggered."

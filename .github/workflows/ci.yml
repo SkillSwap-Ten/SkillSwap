@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, v2]
+  pull_request:
+    branches: [main, v2]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  NUGET_XMLDOC_MODE: skip
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj','**/global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore SkillSwap.sln
+
+      - name: Verify code format
+        run: dotnet format SkillSwap.sln --verify-no-changes --severity error --no-restore
+
+      - name: Build (Release, warnings-as-errors)
+        run: dotnet build SkillSwap.sln --configuration Release --no-restore
+
+      - name: Test with coverage
+        run: |
+          dotnet test SkillSwap.sln \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=test-results.trx" \
+            --logger "console;verbosity=normal" \
+            --collect:"XPlat Code Coverage" \
+            --settings coverlet.runsettings \
+            --results-directory ./TestResults
+
+      - name: Generate coverage report
+        if: success() || failure()
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.3.11
+        with:
+          reports: '**/coverage.cobertura.xml'
+          targetdir: 'coveragereport'
+          reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub;TextSummary'
+          historydir: 'coverage-history'
+
+      - name: Append coverage summary to job output
+        if: success() || failure()
+        run: |
+          if [ -f coveragereport/SummaryGithub.md ]; then
+            echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+            cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload coverage artifacts
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coveragereport
+          retention-days: 30
+
+      - name: Upload test results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+          retention-days: 14
+
+      # === Coverage gates (informational hasta HANDOFF-04) ===
+      # Cuando aterricen los primeros tests, activá estos thresholds
+      # convirtiendo el `continue-on-error: true` en `false`.
+      # Targets del ADR-001 §7:
+      #   Domain ≥90 / Application ≥85 / Infrastructure ≥70
+      #   API ≥60 / Total ≥80
+      - name: Enforce coverage thresholds (informational only)
+        if: success()
+        continue-on-error: true
+        run: |
+          echo "::notice::Coverage gates are informational in HANDOFF-03."
+          echo "::notice::Will be enforced starting HANDOFF-04 (first vertical slice)."
