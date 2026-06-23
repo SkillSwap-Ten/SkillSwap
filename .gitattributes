@@ -1,0 +1,32 @@
+# Set default behavior to automatically normalize line endings to LF.
+# This is the modern cross-platform standard.
+* text=auto eol=lf
+
+# Force binary handling for these (never modify, never diff)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.nupkg binary
+*.snupkg binary
+*.dll binary
+*.exe binary
+*.so binary
+*.dylib binary
+*.pdb binary
+
+# Shell scripts must remain LF (Linux/macOS)
+*.sh text eol=lf
+
+# Windows-specific files must remain CRLF
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
