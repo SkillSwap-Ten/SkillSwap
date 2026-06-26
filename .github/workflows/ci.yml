@@ -60,7 +60,7 @@ jobs:
             --results-directory ./TestResults
 
       - name: Generate coverage report
-        if: success() || failure()
+        if: success() && hashFiles('**/coverage.cobertura.xml') != ''
         uses: danielpalme/ReportGenerator-GitHub-Action@5.3.11
         with:
           reports: '**/coverage.cobertura.xml'
